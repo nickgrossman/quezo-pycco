@@ -1,0 +1,5 @@
+* package a my own pycco. sm_pycco.
+* clean up pycco. 
+
+* run from python project directory
+	- python ~/boxes/pycco/pycco/main.py -f py
