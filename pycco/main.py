@@ -268,7 +268,7 @@ def generate_home(source, preserve_paths=True, outdir=None):
     jspath = path.relpath(path.join(outdir, "pycco.js"), path.split(dest)[0])
 
     readme_file = open(source)
-    home_page_html = readme_file.read()
+    home_page_html = markdown(readme_file.read())
     readme_file.close()
 
     rendered = home_template({
@@ -573,11 +573,13 @@ def monitor(sources, opts):
 
 def get_sources(filters):
     matches = []
-    file_types = filters.split(',')
+    file_types = [ ]
 
-    if len(file_types) < 1:
-        file_types['py']
-
+    if filters:
+        file_types = filters.split(',')
+    else:
+        file_types.append('py')
+    
     for file_type in file_types:
         file_type = "*." + file_type
 

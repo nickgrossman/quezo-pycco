@@ -70,7 +70,7 @@ h2, h3, h4, h5, h6 {
         }
 div.docs {
   float: left;
-  max-width: 500px;
+  max-width: 600px;
   min-width: 500px;
   min-height: 5px;
   padding: 10px 25px 1px 50px;
