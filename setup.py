@@ -15,6 +15,9 @@ setup(
                 'pycco = pycco.main:main',
                 ]
             },
+        package_data = {
+                '': ['*.js']
+        },
         install_requires = ['markdown', 'pygments', 'pystache', 'smartypants'],
         extras_require = {'monitoring': 'watchdog'},
         )
