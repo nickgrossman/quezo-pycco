@@ -70,13 +70,19 @@ h2, h3, h4, h5, h6 {
         }
 div.docs {
   float: left;
-  max-width: 600px;
+  max-width: 500px;
   min-width: 500px;
   min-height: 5px;
   padding: 10px 25px 1px 50px;
   vertical-align: top;
   text-align: left;
 }
+
+#home-content {
+  max-width: 600px;
+  min-width: 500px;
+}
+
   .docs pre {
     margin: 15px 0 15px;
     padding-left: 15px;
@@ -104,15 +110,14 @@ div.docs {
         opacity: 1;
       }
 div.code {
-  margin-left: 580px;
-  padding: 14px 15px 16px 50px;
+  margin-left: 550px;
+  padding: 14px 0px 16px 50px;
   vertical-align: top;
-  /* added by me */
   max-width: 600px;
   word-wrap:break-word;
 }
   .code pre, .docs p code {
-    font-size: 14px;
+    font-size: 13px;
   }
     pre, tt, code {
       line-height: 18px;
