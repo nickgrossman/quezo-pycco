@@ -430,7 +430,7 @@ def get_project_name():
     """save the project name as the root of the project path"""
     return os.getcwd().split('/').pop().capitalize()
 
-def get_files_hash(sources, outdir):
+def get_files_hash(sources, outdir, depth=0):
     files_hash = [ ]
 
     for source in sources:
@@ -448,19 +448,28 @@ def get_files_hash(sources, outdir):
         html_file_name = html_file_name.replace(os.getcwd() + '/', '')
         html_file_name = html_file_name.lstrip('/')
 
-        file_hash['html_file_name'] = get_physical_file_name(source, outdir)
+        if depth > 0:
+            pre = "/".join(depth * ['..'])
+        else:
+            pre = ""
+
+        file_hash['html_file_name'] = "%s/%s" % (pre, get_physical_file_name(source, outdir))
+
         file_hash['filename'] = html_file_name
         files_hash.append(file_hash)
 
     return files_hash
 
-def load_header(sources, outdir):
+def load_header(this_file, sources, outdir):
+    rel_file = this_file.replace(os.getcwd(), "")
+    depth = len(rel_file.split("/")) - 2
+
     header_template = template(html_templates.header)
 
     global header_html
     header_html = header_template({
         "project_name" : get_project_name(),
-        "files"        : get_files_hash(sources, outdir)
+        "files"        : get_files_hash(sources, outdir, depth)
     })
 
 def is_file_empty(filepath):
@@ -502,9 +511,11 @@ def process(sources, preserve_paths=True, outdir=None):
         with open(path.join(outdir, "pycco.js"), "w") as js_file:
             js_file.write(js_templates.js)
 
-        load_header(sources, outdir)
-
         for s in sources:
+
+            # Need to refresh sources
+            load_header(s, sources, outdir)
+
             dest = destination(s, preserve_paths=preserve_paths, outdir=outdir)
             # skip empty py files, mostly __init__.py
             if is_file_empty(s):
