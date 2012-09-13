@@ -277,8 +277,8 @@ body .il { color: #666666 }                     /* Literal.Number.Integer.Long *
 }
 
 .open .flybar-button {
-  
-  
+
+
   color: white;
   background-color: #999;
   border-color: #999;
@@ -292,9 +292,10 @@ body .il { color: #666666 }                     /* Literal.Number.Integer.Long *
 }
 
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
+  position: fixed;
+  top: 55px;
+  overflow-y: auto;
+  height: 80%;
   z-index: 1000;
   display: none;
   float: left;
