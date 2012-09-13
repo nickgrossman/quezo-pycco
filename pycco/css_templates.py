@@ -1,8 +1,8 @@
 css = """\
 /*--------------------- Layout and Typography ----------------------------*/
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-size: 15px;
   line-height: 24px;
   color: #252519;
   margin: 0; padding: 0;
@@ -27,10 +27,13 @@ h2, h3, h4, h5, h6 {
 }
 #background {
   position: fixed;
-  top: 0; left: 580px; right: 0; bottom: 0;
+  top: 0; left: 525px; right: 0; bottom: 0;
   background: #f5f5ff;
   border-left: 1px solid #e5e5ee;
   z-index: -1;
+}
+#flybar {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 #jump_to, #jump_page {
   background: white;
@@ -70,8 +73,9 @@ h2, h3, h4, h5, h6 {
         }
 div.docs {
   float: left;
-  max-width: 500px;
-  min-width: 500px;
+  overflow: hidden;
+  max-width: 450px;
+  min-width: 450px;
   min-height: 5px;
   padding: 10px 25px 1px 50px;
   vertical-align: top;
@@ -90,7 +94,6 @@ div.docs {
   .docs p tt, .docs p code {
     background: #f8f8ff;
     border: 1px solid #dedede;
-    font-size: 12px;
     padding: 0 0.2em;
   }
   .octowrap {
@@ -110,18 +113,18 @@ div.docs {
         opacity: 1;
       }
 div.code {
-  margin-left: 550px;
+  margin-left: 500px;
   padding: 14px 0px 16px 50px;
   vertical-align: top;
-  max-width: 600px;
   word-wrap:break-word;
 }
   .code pre, .docs p code {
-    font-size: 13px;
+    font-size: 12px;
   }
     pre, tt, code {
+      font-size: 12px;
       line-height: 18px;
-      font-family: 'Bitstream Vera Sans Mono','Courier', monospace;
+      font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
       margin: 0; padding: 0;
     }
 div.clearall {
