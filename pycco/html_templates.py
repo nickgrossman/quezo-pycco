@@ -1,7 +1,7 @@
 header = """\
 <!-- fly bar -->
 <div id="flybar">
-<a id="nav-logo" href="index.html">{{{ project_name }}} Documentation</a>
+<a id="nav-logo" href="{{indexpath}}">{{{ project_name }}} Documentation</a>
 
 <div class="flybar-language">
   <div class="dropdown">

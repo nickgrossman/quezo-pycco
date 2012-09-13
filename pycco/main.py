@@ -449,26 +449,35 @@ def get_files_hash(sources, outdir, depth=0):
         html_file_name = html_file_name.lstrip('/')
 
         if depth > 0:
-            pre = "/".join(depth * ['..'])
+            pre = "%s/" % "/".join(depth * ['..'])
         else:
             pre = ""
 
-        file_hash['html_file_name'] = "%s/%s" % (pre, get_physical_file_name(source, outdir))
+        file_hash['html_file_name'] = "%s%s" % (pre, get_physical_file_name(source, outdir))
 
         file_hash['filename'] = html_file_name
         files_hash.append(file_hash)
 
     return files_hash
 
-def load_header(this_file, sources, outdir):
-    rel_file = this_file.replace(os.getcwd(), "")
-    depth = len(rel_file.split("/")) - 2
+def load_header(this_file, sources, outdir, dest=None):
+    if this_file:
+        rel_file = this_file.replace(os.getcwd(), "")
+        depth = len(rel_file.split("/")) - 2
+    else:
+        depth = 0
+
+    if dest:
+        indexpath = path.relpath(path.join(outdir, "index.html"), path.split(dest)[0])
+    else:
+        indexpath = "index.html"
 
     header_template = template(html_templates.header)
 
     global header_html
     header_html = header_template({
         "project_name" : get_project_name(),
+        "indexpath"    : indexpath,
         "files"        : get_files_hash(sources, outdir, depth)
     })
 
@@ -513,10 +522,11 @@ def process(sources, preserve_paths=True, outdir=None):
 
         for s in sources:
 
-            # Need to refresh sources
-            load_header(s, sources, outdir)
-
             dest = destination(s, preserve_paths=preserve_paths, outdir=outdir)
+
+            # Need to refresh sources
+            load_header(s, sources, outdir, dest)
+
             # skip empty py files, mostly __init__.py
             if is_file_empty(s):
                 continue
@@ -541,6 +551,7 @@ def process(sources, preserve_paths=True, outdir=None):
             break
 
     if readme_file:
+        load_header(None, sources, outdir)
         dest = destination('index.html', preserve_paths=preserve_paths, outdir=outdir)
 
         with open(dest, "w") as f:
