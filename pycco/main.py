@@ -91,7 +91,7 @@ def parse(source, code):
 
         # Only go into multiline comments section when one of the delimiters is
         # found to be at the start of a line
-        if all(multi_line_delimiters) and any([line.lstrip().startswith(delim) for delim in multi_line_delimiters]):
+        if all(multi_line_delimiters) and any([line.lstrip().startswith(delim) or line.rstrip().endswith(delim) for delim in multi_line_delimiters]):
             if not multi_line:
                 multi_line = True
 
@@ -377,11 +377,11 @@ def destination(filepath, preserve_paths=True, outdir=None):
     Compute the destination HTML path for an input source file path. If the
     source is `lib/example.py`, the HTML will be at `docs/example.html`
     """
-    physical_file_name = get_physical_file_name(filepath, outdir)
-    
+    physical_file_name = get_physical_file_name(filepath, outdir, preserve_paths)
+
     return path.join(outdir, physical_file_name)
 
-def get_physical_file_name(filepath, outdir):
+def get_physical_file_name(filepath, outdir, preserve_paths=False):
     dirname, filename = path.split(filepath)
 
     if not outdir:
@@ -391,12 +391,21 @@ def get_physical_file_name(filepath, outdir):
     except ValueError:
         name = filename
 
-    dirname_prefix = dirname.replace(os.getcwd(), '').replace('/', '_').lstrip('_')
+    if preserve_paths:
+        dirname = dirname.replace(os.getcwd(), path.join(os.getcwd(), outdir))
+        name = path.join(dirname, "%s.html" % name)
+        return name
 
-    if dirname_prefix:
-        return "%s.html" % (dirname_prefix + '_' + name)
     else:
-        return "%s.html" % name
+        dirname_prefix = dirname.replace(os.getcwd(), '').lstrip('_')
+
+        if dirname_prefix:
+            if dirname_prefix.startswith('/'):
+                dirname_prefix = dirname_prefix[1:]
+
+            return "%s.html" % (dirname_prefix + '/' + name)
+        else:
+            return "%s.html" % name
 
 def shift(list, default):
     """
@@ -447,7 +456,7 @@ def get_files_hash(sources, outdir):
 
 def load_header(sources, outdir):
     header_template = template(html_templates.header)
-    
+
     global header_html
     header_html = header_template({
         "project_name" : get_project_name(),
@@ -522,7 +531,7 @@ def process(sources, preserve_paths=True, outdir=None):
 
     if readme_file:
         dest = destination('index.html', preserve_paths=preserve_paths, outdir=outdir)
-        
+
         with open(dest, "w") as f:
             f.write(generate_home(readme_file, preserve_paths=preserve_paths, outdir=outdir))
 
@@ -571,21 +580,39 @@ def monitor(sources, opts):
         observer.stop()
         observer.join()
 
-def get_sources(filters):
+def get_sources(sources, filters, exclude):
+
+    directories = []
+    if sources:
+        for dir_str in sources:
+            if not os.path.isdir(dir_str):
+                sys.exit('%s is not a directory' % dir_str)
+            directories.append(os.path.join(os.getcwd(), dir_str))
+    else:
+        directories.append(os.getcwd())
+
     matches = []
-    file_types = [ ]
+    file_types = []
+    skip_directories = []
 
     if filters:
         file_types = filters.split(',')
     else:
         file_types.append('py')
-    
+
+    if exclude:
+        skip_directories = exclude.split(',')
+
     for file_type in file_types:
         file_type = "*." + file_type
 
-        for root, dirnames, filenames in os.walk(os.getcwd()):
-            for filename in fnmatch.filter(filenames, file_type):
-                matches.append(os.path.join(root, filename))
+        for directory in directories:
+            for root, dirnames, filenames in os.walk(directory):
+                for name in skip_directories:
+                    if name in dirnames:
+                        dirnames.remove(name)
+                for filename in fnmatch.filter(filenames, file_type):
+                    matches.append(os.path.join(root, filename))
 
     return matches
 
@@ -605,8 +632,16 @@ def main():
 
     parser.add_option('-f', '--filters', action='store', type="string",
                       help='The file types you to search for. Defaults to *.py files. Ex. py,js')
+
+    parser.add_option('-x', '--exclude', action='store', type="string",
+                      help='Directory names you with to exlucde, e.g. migrations')
+
     opts, sources = parser.parse_args()
-    sources = get_sources(opts.filters)
+    sources = get_sources(sources, opts.filters, opts.exclude)
+
+    if not sources:
+        sys.exit('No files found to process')
+
     process(sources, outdir=opts.outdir, preserve_paths=True)
 
     # If the -w / --watch option was present, monitor the source directories
