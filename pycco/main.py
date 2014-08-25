@@ -447,7 +447,7 @@ def get_files_hash(sources, outdir, depth=0):
 
         html_file_name = html_file_name.replace(os.getcwd() + '/', '')
         html_file_name = html_file_name.lstrip('/')
-
+        
         if depth > 0:
             pre = "%s/" % "/".join(depth * ['..'])
         else:
@@ -456,6 +456,9 @@ def get_files_hash(sources, outdir, depth=0):
         file_hash['html_file_name'] = "%s%s" % (pre, get_physical_file_name(source, outdir))
 
         file_hash['filename'] = html_file_name
+        
+        file_hash['pretty_name'] = html_file_name[2:]
+        
         files_hash.append(file_hash)
 
     return files_hash
@@ -463,7 +466,7 @@ def get_files_hash(sources, outdir, depth=0):
 def load_header(this_file, sources, outdir, dest=None):
     if this_file:
         rel_file = this_file.replace(os.getcwd(), "")
-        depth = len(rel_file.split("/")) - 2
+        depth = len(rel_file.split("/")) - 3
     else:
         depth = 0
 
